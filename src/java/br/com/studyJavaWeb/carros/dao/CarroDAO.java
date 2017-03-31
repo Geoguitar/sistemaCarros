@@ -1,0 +1,66 @@
+package br.com.studyJavaWeb.carros.dao;
+
+import br.com.studyJavaWeb.carros.entity.Carro;
+import br.com.studyJavaWeb.carros.util.FabricaConexao;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+/**
+ *
+ * @author geoguitar
+ */
+public class CarroDAO {
+    
+    public void salvar(Carro carro){
+        try {
+            Connection conexao = FabricaConexao.getConexao();
+            PreparedStatement ps;
+            
+            ps = conexao.prepareStatement("INSERT INTO `sistema-carros`.`carro` (`modelo`,`fabricante`,`cor`,`ano`) VALUES(?,?,?,?)");
+            ps.setString(1, carro.getModelo());
+            ps.setString(2, carro.getFabricante());
+            ps.setString(3, carro.getCor());
+            ps.setDate(4, new Date(carro.getAno().getTime()));
+            
+            ps.execute();
+            FabricaConexao.fecharConexao();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(CarroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    public List<Carro> buscar(){
+        try {
+            Connection conexao = FabricaConexao.getConexao();
+            PreparedStatement ps = conexao.prepareStatement("select * from carro");
+            ResultSet resultSet = ps.executeQuery();
+            List<Carro> carros = new ArrayList<>();
+            while (resultSet.next()) {                
+                Carro carro = new Carro();
+                carro.setId(resultSet.getInt("id"));
+                carro.setModelo(resultSet.getString("modelo"));
+                carro.setFabricante(resultSet.getString("fabricante"));
+                carro.setCor(resultSet.getString("cor"));
+                carro.setAno(resultSet.getDate("ano"));
+                carros.add(carro);
+            }
+            return carros;
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(CarroDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    
+    
+    
+    
+    
+    }
+}
+  
